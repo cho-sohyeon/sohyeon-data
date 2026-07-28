@@ -1,0 +1,90 @@
+SELECT GU_NAME
+    , TOTAL_FLOW_POP
+    ,(
+    SELECT COUNT(*) 
+      FROM STG_UNMANNED_STORE U 
+    WHERE U.GU_NAME = F.GU_NAME --연관/비연관 (연관서브쿼리 : 서브쿼리에 메인쿼리의 컬럼이 있는 것) 
+    ) AS 무인점포수 
+  FROM STG_FLOW_GU_20254 F ;
+
+
+SELECT GU_NAME
+     , TOTAL_RESIDENT_POP
+     , (
+        SELECT SUM(SALES_AMT)
+          FROM STG_SALES_GU_20254 S
+         WHERE S.GU_NAME = R.GU_NAME
+       ) AS 자치구별판매총액
+  FROM STG_RESIDENT_GU_20254 R; 
+  
+  
+SELECT * 
+  FROM STG_FLOW_GU_20254 F 
+WHERE NOT EXISTS ( 
+        SELECT 1 
+          FROM STG_UNMANNED_STORE U 
+        WHERE U.GU_NAME = F.GU_NAME 
+          AND U.BIZ_TYPE = '무인스터디카페' 
+          ) ; 
+          
+--예제3. 자치구별 매출 상위 3개 업종 보기 
+SELECT GU_NAME
+    , TOTAL_SALES_AMT 
+    , RN 
+  FROM ( 
+        SELECT GU_NAME 
+           , SUM(SALES_AMT) AS TOTAL_SALES_AMT 
+           , ROW_NUMBER() OVER ( 
+              ORDER BY SUM(SALES_AMT) DESC 
+            ) AS RN 
+        FROM STG_SALES_GU_20254 
+    GROUP BY GU_NAME 
+    ) T 
+WHERE RN <= 3 ; 
+
+
+SELECT GU_NAME
+    , TOTAL_UNMANNED_STORE_CNT 
+    , SUM(TOTAL_UNMANNED_STORE_CNT) OVER() AS ALL_STORE_CNT 
+    , ROUND ( TOTAL_UNMANNED_STORE_CNT / SUM(TOTAL_UNMANNED_STORE_CNT) OVER() * 100, 2) AS 전체대비무인점포비율 
+  FROM MART_UNMANNED_STORE_GU_20254 
+ORDER BY 전체대비무인점포비율 DESC ; 
+  
+--GROUP BY 와의 차이점 
+SELECT SUM(TOTAL_UNMANNED_STORE_CNT)
+  FROM MART_UNMANNED_STORE_GU_20254 ; 
+  
+---집계함수 
+--예제1. 전체 무인점포 수 합계를 각 자치구 행마다 함께 보기
+SELECT GU_NAME 
+    , TOTAL_UNMANNED_STORE_CNT 
+    , SUM(TOTAL_UNMANNED_STORE_CNT) OVER () AS ALL_STORE_CNT 
+  FROM MART_UNMANNED_STORE_GU_20254; 
+
+--예제2. 전체 자치구 평균 무인점포 수를 각 행마다 함께 보기
+SELECT GU_NAME 
+    , TOTAL_UNMANNED_STORE_CNT
+    , ROUND(AVG(TOTAL_UNMANNED_STORE_CNT) OVER(), 2) AS 전체평균점포수 
+  FROM MART_UNMANNED_STORE_GU_20254 ; 
+  
+---비율함수 
+--예제 1. 자치구별 무인점포 수의 전체 대비 비중
+SELECT GU_NAME 
+    ,TOTAL_UNMANNED_STORE_CNT 
+    ,SUM(TOTAL_UNMANNED_STORE_CNT) OVER () AS 전체합계
+    ,ROUND( 
+        TOTAL_UNMANNED_STORE_CNT 
+        / SUM(TOTAL_UNMANNED_STORE_CNT) OVER () * 100 
+        , 2 
+        ) AS 전체점포수대비비율 
+  FROM MART_UNMANNED_STORE_GU_20254
+ORDER BY 전체점포수대비비율 DESC ; 
+
+
+
+--문제3 
+SELECT GU_NAME 
+    , TOTAL_UNMANNED_STORE_CNT 
+    , STORE_RANK 
+  FROM MART_UNMANNED_STORE_GU_20254 
+  

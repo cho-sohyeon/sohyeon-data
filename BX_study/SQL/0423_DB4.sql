@@ -1,0 +1,220 @@
+--문제 1 & 2 SELECT * FROM DEPT ; 
+
+SELECT * FROM EMP ;
+
+INSERT INTO EMP ( 
+    EMP_ID, NAME, GENDER, BIRTH_DATE, 
+    HIRE_DATE, JOB_TITLE, JOB_LEVEL, DEPT_NO, 
+    LEAVE_AMOUNT, RETIRE_YN, RETIRE_DATE, CREATED_AT 
+    ) 
+    VALUES ( 
+    'EMP101', '김연경', 'F', '19801212', '20250718', 
+    '팀장', 'P1', 'D003', 15, 'N', NULL, SISDATE 
+) ; 
+
+SELECT PRODUCT_ID, STOCK_QTY 
+    FROM LG_PRODUCT ; 
+
+UPDATE LG_PRODUCT 
+    SET STOCK_QTY = STOCK_QTY - 3 
+WHERE PRODUCT_ID = 'P009' 
+
+--문제 3 
+SELECT LENGTH(REVIEW_TEXT) 
+    , REVIEW_TEXT 
+  FROM PRODUCT_REVIEW
+WHERE LENGTH(REVIEW_TEXT) <= 10 ; 
+
+DELETE FROM PRODUCT _REVIEW
+  WHERE LENGTH(REVIEW_TEXT) <= 10 ;
+  
+  
+--문제 5 
+-- (1) 신규 회원 추가
+INSERT INTO LG_MEMBER (
+       MEMBER_ID
+     , MEMBER_NAME
+     , GENDER_CODE
+     , BIRTH_YEAR
+     , CITY_NAME
+     , DISTRICT_NAME
+     , HOUSEHOLD_TYPE
+     , HOUSEHOLD_SIZE
+     , HOME_TYPE
+     , HOME_AREA_M2
+     , PET_FLAG
+     , CHILD_FLAG
+     , OCCUPANCY_PATTERN
+     , JOINED_AT
+) VALUES (
+       'MEMBER51'
+     , '한지우'
+     , 'F'
+     , 1998
+     , '서울'
+     , '마포구'
+     , 'SINGLE'
+     , 1
+     , 'OFFICETEL'
+     , 33
+     , 'N'
+     , 'N'
+     , 'OFFICE_WORKER'
+     , SYSTIMESTAMP
+);
+
+-- (2) 신규 디바이스 추가
+INSERT INTO LG_DEVICE (
+       DEVICE_ID
+     , PRODUCT_ID
+     , DEVICE_TYPE
+     , MODEL_NAME
+     , SERIAL_NO
+     , DEVICE_ALIAS
+     , REPORTABLE_FLAG
+     , GROUP_ID
+     , INSTALL_ROOM
+     , INSTALLED_AT
+     , ACTIVE_FLAG
+) VALUES (
+     'DEV_MEM51_P010_001'
+     , 'P010'
+     , 'DEVICE_WATER_PURIFIER'
+     , 'WD523ACB'
+     , 'SN-M51-P010-001'
+     , '지우네 정수기'
+     , 'Y'
+     , NULL
+     , '주방'
+     , SYSTIMESTAMP
+     , 'Y'
+
+); 
+
+-- (3) 회원-디바이스 매핑 추가
+INSERT INTO LG_MEMBER_DEVICE (
+       MEMBER_DEVICE_ID
+     , MEMBER_ID
+     , DEVICE_ID
+     , ASSIGNED_FROM
+     , ASSIGNED_TO
+     , OWNERSHIP_ROLE
+     , ACTIVE_FLAG
+) VALUES (
+       'MD051'
+     , 'MEMBER51'
+     , 'DEV_MEM51_P010_001'
+     , SYSTIMESTAMP
+     , NULL
+     , 'PRIMARY'
+     , 'Y'
+);
+
+-- (4) 재고 1개 차감
+UPDATE LG_PRODUCT
+   SET STOCK_QTY = STOCK_QTY - 1
+ WHERE PRODUCT_ID = 'P010';
+
+
+SELECT * FROM USERS ; 
+
+--시퀀스 : 자동으로 증가하는 값을 주는 용도 
+CREATE SEQUENCE USER_ID_SEQ START WITH 1 INCREMENT BY 1 ; 
+
+SELECT USER_ID_SEQ.NEXTVAL FROM DUAL ; 
+
+--바인드 변수 : 외부에서 입력된 값을 받아서 대입 
+INSERT INTO USERS (
+    ID, NAME, EMAIL 
+) VALUES ( 
+  USER_ID_SEQ.NEXTVAL ,  
+  :name , 
+  :email
+) ; 
+
+
+---DDL---
+
+CREATE TABLE PRODUCT_TEST (
+    PRODUCT_ID NUMBER, 
+    PRODUCT_NAME VARCHAR2(255) NOT NULL, 
+    CATEGORY VARCHAR2(100) NOT NULL, 
+    PRICE NUMBER DEFAULT 0 NOT NULL, 
+    STOCK NUMBER DEFAULT 0 NOT NULL, 
+    PRODUCT_DESCRIPTION VARCHAR2(4000), 
+    CREATED_DATE DATE NOT NULL 
+) ; 
+
+SELECT * FROM PRODUCT_TEST ; 
+
+-- 값을 넣지 않는경우 오류 (NOT NULL인 컬럼은 값을 꼭 줘야한다) 
+INSERT INTO PRODUCT_TEST ( 
+            PRODUCT_ID 
+--          , PRODUCT_NAME 
+          , CATEGORY 
+          , PRICE 
+          , STOCK 
+          , PRODUCT_DESCRIPTION 
+          , CREATED_DATE 
+) VALUES ( 
+            1
+--          , '상품1' 
+          , '전자제품'
+          , 12000
+          , 12
+          , '상품1은 상품1입니다' 
+          , SYSDATE --현재 날짜를 년월일시분초까지 입력해주는 날짜형 데이터 
+); 
+            1
+            
+CREATE TABLE MYTEST (
+    COL1 VARCHAR2(10) , 
+    COL2 VARCHAR2(10)
+) ; 
+
+SELECT * FROM MYTEST ; 
+ALTER TABLE MYTEST ADD COL3 VARCHAR2(200) DEFAULT 'X' NOT NULL ; 
+
+ALTER TABLE MYTEST MODIFY COL1 NUMBER NOT NULL ;
+
+ALTER TABLE MYTEST DROP COLUMN COL3 ; 
+
+SELECT COL1, COL2 FROM MYTEST ; 
+ALTER TABLE MYTEST RENAME COLUMN COL1 TO 컬럼1 ; 
+
+
+
+--DROP 
+DROP TABLE MYTEST ; 
+
+--제약 조건 
+--1. 테이블 생성과 동시에 식별자 설정하는 법 
+--    단점) 식별자를 구성하는 속성이 하나일때만 
+CREATE TABLE TAB1 ( 
+    COL1 NUMBER PRIMARY KEY, 
+    COL2 NUMBER , 
+    COL3 NUMBER 
+) ; 
+
+INSERT INTO TAB1 VALUES (1, 1, 1) ; 
+SELECT * FROM TAB1 ; 
+
+--2. 속성 2개 이상일 때 
+CREATE TABLE TAB2 ( 
+    COL1 NUMBER , 
+    COL2 NUMBER , 
+    COL3 NUMBER ,
+    PRIMARY KEY(COL1, COL2) --COL1,COL2 조합해서 식별하겠다. 
+) ;
+
+INSERT INTO TAB2 VALUES (1, 2, 1) ; 
+SELECT * FROM TAB2 ; 
+
+--3. 테이블 생성 따로 , 
+CREATE TABLE TAB3 ( 
+    COL1 NUMBER PRIMARY KEY, 
+    COL2 NUMBER , 
+    COL3 NUMBER 
+) ;
+ 
+ALTER TABLE TAB3 ADD CONSTRAINT PK_TAB3 PRIMARY KEY(COL1) ; 

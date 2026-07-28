@@ -1,0 +1,66 @@
+--문제 1 
+SELECT * 
+  FROM ( 
+        SELECT PRODUCT_ID
+            , PRODUCT_NAME 
+          , CATEGORY_NAME
+          , PRICE 
+          , STOCK_QTY
+          , CREATED_AT 
+        FROM LG_PRODUCT  
+      ORDER BY PRICE DESC 
+      )
+WHERE ROWNUM <= 3 ; 
+        
+SELECT PRODUCT_ID
+    , PRODUCT_NAME 
+    , CATEGORY_NAME
+    , PRICE 
+    , STOCK_QTY
+    , CREATED_AT 
+  FROM LG_PRODUCT  
+ ORDER BY PRICE DESC  
+ FETCH FIRST 3 ROWS ONLY ; 
+ 
+ SELECT * 
+   FROM ( 
+         SELECT PRODUCT_ID
+            , PRODUCT_NAME 
+            , CATEGORY_NAME
+            , PRICE 
+            , STOCK_QTY
+            , CREATED_AT 
+         FROM LG_PRODUCT  
+        ORDER BY PRICE ASC 
+        )
+WHERE ROWNUM <= 3 ; 
+
+
+   SELECT PRODUCT_ID
+    , PRODUCT_NAME 
+    , CATEGORY_NAME
+    , PRICE 
+    , STOCK_QTY
+    , CREATED_AT 
+  FROM LG_PRODUCT  
+ ORDER BY PRICE ASC 
+ FETCH FIRST 3 ROWS ONLY ; 
+ 
+--문제4
+
+SELECT * 
+    FROM ( 
+        SELECT MEMBER_ID 
+            , SUM(USE_AMOUNT_KWH) AS 회원별전력합계 
+        FROM LG_ENERGY_USAGE_DAILY_FACT 
+        GROUP BY MEMBER_ID 
+        ORDER BY SUM(USE_AMOUNT_KWH) DESC
+        ) 
+WHERE ROWNUM <= 3 ; 
+
+SELECT MEMBER_ID 
+        , SUM(USE_AMOUNT_KWH) AS 회원별전력합계 
+  FROM LG_ENERGY_USAGE_DAILY_FACT 
+ GROUP BY MEMBER_ID 
+ ORDER BY SUM(USE_AMOUNT_KWH) DESC
+ FETCH FIRST 3 ROWS ONLY ; 

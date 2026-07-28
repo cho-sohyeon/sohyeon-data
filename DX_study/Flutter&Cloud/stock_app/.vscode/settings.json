@@ -1,0 +1,6 @@
+{
+    "dart.flutterRunAdditionalArgs": [
+        "--web-browser-flag=--disable-web-security",
+        "--web-browser-flag=--user-data-dir=${workspaceFolder}/.cors-chrome-profile"
+    ]
+}

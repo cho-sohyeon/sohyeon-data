@@ -1,0 +1,64 @@
+SELECT PRODUCT_NAME
+    , CATEGORY_NAME
+    , PRICE 
+ FROM LG_PRODUCT
+WHERE PRICE >= 1500000
+ORDER BY PRICE DESC ; 
+
+
+SELECT PRODUCT_NAME, CATEGORY_NAME, PPRICE
+ FROM LG_PRODUCT -- 테이블 드래그해서 SHIFT + F4
+WHERE PRICE >= 1500000
+ORDER BY PRICE DESC; 
+
+--실습1 
+SELECT EMP_ID
+    , NAME 
+    , BIRTH_DATE
+ FROM EMP ;
+ 
+--실습2 
+SELECT EMP_ID
+    , JOB_TITLE
+    , RETIRE_YN
+    , RETIRE_DATE 
+FROM EMP ;
+
+--실습3
+SELECT REVIEW_ID
+    , RATING
+    , REVIEW_TEXT
+    , CREATED_AT 
+FROM PRODUCT_REVIEW ;
+
+
+select product_id, count(*)
+    from product_review 
+group by rollup(product_id);
+
+
+SELECT * 
+ FROM EMP; 
+ 
+SELECT * FROM LG_MEMBER ; 
+SELECT * FROM LG_PRODUCT ; 
+
+SELECT DISTINCT PRODUCT_ID
+ From PRODUCT_REVIEW ; 
+ 
+SELECT * FROM PRODUCT_REVIEW ; 
+
+
+SELECT NAME AS 사원명
+    ,GENDER AS 성별
+    ,BIRTH_DATE AS 생년월일 
+    ,RETIRE_YN AS 퇴사여부
+    ,CASE WHEN RETIRE_YN = 'Y'
+        THEN '퇴사'
+        ELSE '재직중'
+    END AS RETIRE_YN
+    , CASE WHEN RETIRE_YN = 'Y'
+        THEN '퇴사'
+        ELSE '재직중' 
+    END 
+FROM EMP; 
