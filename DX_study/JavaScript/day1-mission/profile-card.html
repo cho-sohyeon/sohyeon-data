@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 프로필 카드</title>
+
+<!--
+================================================================
+  Day 1 오후 미션, 심화 과제 시작 파일
+
+  HTML과 CSS는 이미 채워져 있습니다.
+  아래쪽 script 안의 TODO 네 곳만 채우면 됩니다.
+
+  파일을 더블클릭하면 바로 열립니다.
+  고친 뒤에는 저장하고 브라우저에서 새로고침하세요.
+================================================================
+-->
+
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f2f4f8;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif;
+  }
+
+  .card {
+    width: 380px;
+    padding: 44px 40px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .avatar {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background: #a50034;
+    color: #ffffff;
+    font-size: 40px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .name {
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #111111;
+  }
+
+  .role {
+    margin: 0 0 26px;
+    font-size: 15px;
+    color: #888888;
+  }
+
+  .message {
+    min-height: 52px;
+    margin: 0 0 28px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #333333;
+    word-break: keep-all;
+  }
+
+  .interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+
+  .interests span {
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: #f2f4f8;
+    font-size: 14px;
+    color: #555555;
+  }
+
+  button {
+    padding: 13px 30px;
+    border: none;
+    border-radius: 10px;
+    background: #a50034;
+    color: #ffffff;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #7d0027;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="avatar" id="avatar">김</div>
+    <p class="name" id="name">이름</p>
+    <p class="role">LG전자 DX School 6기 1반</p>
+
+    <p class="message" id="message">소개 문구가 여기에 나옵니다</p>
+
+    <div class="interests" id="interests"></div>
+
+    <button onclick="changeMessage()">다음 소개 보기</button>
+  </div>
+
+<script>
+  // ===== TODO 1 =====
+  // 내 이름을 담을 변수를 만드세요.
+  // 이름은 한 번 정하면 바뀌지 않으므로 const 로 선언합니다.
+    const myName = "소현";
+
+
+  // ===== TODO 2 =====
+  // 나를 소개하는 문구 3개를 배열로 만드세요.
+  // 예: const messages = ["문구1", "문구2", "문구3"];
+    const messages = [
+    "기획하고 조율하며, 데이터로 증명하는 마케터입니다.",
+    "LG전자 DX School에서 데이터 분석을 배우고 있습니다.",
+    "데이터를 근거로 사람의 니즈를 파악하는 일을 좋아합니다."
+    ];
+
+
+  // 지금 몇 번째 문구를 보여주는 중인지 기억하는 변수입니다.
+  // 버튼을 누를 때마다 값이 바뀌므로 let 으로 선언되어 있습니다.
+  let messageIndex = 0;
+
+
+  // ===== TODO 3 =====
+  // 버튼을 누르면 실행될 함수입니다.
+  // 아래 순서대로 채우세요.
+  //   1. messageIndex 를 1 증가시키기
+  //   2. 마지막 문구를 넘어갔으면 다시 0 으로 되돌리기
+  //   3. 화면의 문구를 messages[messageIndex] 로 바꾸기
+    function changeMessage() {
+    messageIndex = messageIndex + 1;
+
+    if (messageIndex >= messages.length) {
+        messageIndex = 0;
+    }
+
+    document.querySelector("#message").textContent = messages[messageIndex];
+    }
+
+
+  // ===== TODO 4 =====
+  // 페이지가 열릴 때 이름과 첫 소개 문구를 화면에 표시하세요.
+  // 화면을 바꾸는 방법은 오전에 콘솔에서 해본 것과 같습니다.
+  //   document.querySelector("#name").textContent = 무언가;
+    document.querySelector("#name").textContent = myName;
+    document.querySelector("#message").textContent = messages[messageIndex];
+    document.querySelector("#avatar").textContent = myName[0];
+
+
+  // 관심사를 화면에 그리는 부분입니다. 이미 완성되어 있습니다.
+  // 위 TODO 2 처럼 interests 배열만 만들어 두면 알아서 표시됩니다.
+  const interests = ["데이터 분석", "마케팅", "기획"];
+
+  for (const interest of interests) {
+    document.querySelector("#interests").innerHTML =
+      document.querySelector("#interests").innerHTML + "<span>" + interest + "</span>";
+  }
+</script>
+
+</body>
+</html>
