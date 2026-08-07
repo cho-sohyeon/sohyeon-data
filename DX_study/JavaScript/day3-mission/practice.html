@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DOM 연습장</title>
+
+<!--
+================================================================
+  Day 3 오전 연습장
+
+  오전 내내 이 파일 하나를 씁니다.
+  편집기와 브라우저를 나란히 띄워두고,
+  고칠 때마다 저장하고 브라우저에서 새로고침하세요.
+
+  자바스크립트는 맨 아래 script 안에 씁니다.
+================================================================
+-->
+
+<style>
+  body {
+    margin: 0; padding: 48px 28px; background: #f2f4f8;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif; color: #111111;
+    transition: background .2s, color .2s;
+  }
+
+  /* 퀵 실습 3 에서 켜고 끌 클래스입니다. 이미 만들어 뒀습니다. */
+  body.dark { background: #1e1e24; color: #e6e6ec; }
+  body.dark .box { background: #2a2a33; border-color: #3a3a46; }
+
+  .wrap { max-width: 680px; margin: 0 auto; }
+
+  h1 { margin: 0 0 24px; font-size: 30px; }
+  p { margin: 0 0 12px; font-size: 17px; line-height: 1.6; }
+
+  .box {
+    margin-top: 28px; padding: 26px 28px; min-height: 90px;
+    border: 1px solid #dddddd; border-radius: 12px; background: #ffffff;
+  }
+
+  .row { display: flex; gap: 10px; margin-top: 28px; }
+  button {
+    padding: 13px 22px; border: 1px solid #a50034; border-radius: 10px;
+    background: #ffffff; color: #a50034; font-size: 15px; cursor: pointer;
+  }
+  button:hover { background: #a50034; color: #ffffff; }
+
+  ul { margin: 0; padding-left: 22px; }
+  li { font-size: 17px; line-height: 1.9; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1 id="title">연습장</h1>
+
+    <p>첫 번째 문단입니다.</p>
+    <p>두 번째 문단입니다.</p>
+    <p>세 번째 문단입니다.</p>
+
+    <div class="box" id="box">이 상자를 채워 보세요</div>
+
+    <div class="row">
+      <button id="hello-button">인사</button>
+      <button id="title-button">제목 바꾸기</button>
+      <button id="dark-button">어둡게</button>
+    </div>
+  </div>
+
+<script>
+  // =========================================================
+  //  여기에 코드를 씁니다.
+  //
+  //  script 가 body 맨 아래에 있는 이유
+  //    위에 있는 태그들이 먼저 만들어진 뒤에 이 코드가 돌아야
+  //    querySelector 가 요소를 찾을 수 있기 때문입니다.
+  //    head 안에 두면 null 이 나옵니다.
+  // =========================================================
+
+
+  // ===== 퀵 실습 1  요소 찾고 바꾸기 =====
+  // 1. 제목을 내 이름으로 바꾸기
+  // 2. 문단이 몇 개인지 콘솔에 찍기
+  // 3. 두 번째 문단만 바꾸기
+  // 4. 빈 상자에 굵은 글씨를 넣기
+
+console.log
+
+document.querySelectorAll("p")[1].textContent = "여기만 바꿨슴다"; 
+
+box.innerHTML = "<b>굵게</b>"; 
+
+box.style.backgroundColor = "red"; 
+
+box.style.color = "white"; 
+
+box.style.padding= "40px"; 
+
+
+  // ===== 퀵 실습 2  배열을 목록으로 그리기 =====
+  const foods = ["김밥", "라면", "돈까스", "우동"];
+
+  // 1. 이 배열을 화면의 빈 상자에 목록으로 그리기
+  // 2. 글자 수가 3자 이상인 것만 그리기
+
+
+document.querySelector(#box").innerHTML = foods.filter(food => food.length >=3).map(food => <li>${fod}</li>).join("");
+
+
+  // ===== 퀵 실습 3  버튼 살리기 =====
+  // 1. 인사 버튼을 누르면 콘솔에 글자가 찍히게
+  // 2. 제목 바꾸기 버튼을 누르면 제목이 바뀌게
+  // 3. 어둡게 버튼을 누를 때마다 어두운 배경이 켜졌다 꺼지게
+  //    CSS 에 dark 클래스가 이미 준비되어 있습니다
+
+ const helloButton = document.querySelector("#hello-button"); 
+
+helloButton.addEventListener("click", () => consle.log("안녕!")); 
+
+
+</script>
+
+</body>
+</html>

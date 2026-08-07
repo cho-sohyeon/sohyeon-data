@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>비동기 연습장</title>
+
+<!--
+================================================================
+  Day 4 오전 연습장
+
+  오전 내내 이 파일 하나를 씁니다.
+  편집기와 브라우저를 나란히 띄워두고,
+  고칠 때마다 저장하고 브라우저에서 새로고침하세요.
+
+  자바스크립트는 맨 아래 script 안에 씁니다.
+  아래쪽 준비된 함수 두 개는 손대지 마세요.
+================================================================
+-->
+
+<style>
+  body {
+    margin: 0; padding: 48px 28px; background: #f2f4f8;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif; color: #111111;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; }
+
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .subtitle { margin: 0 0 32px; font-size: 15px; color: #888888; }
+
+  .card {
+    padding: 34px 32px; margin-bottom: 20px; border-radius: 14px;
+    background: #ffffff; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  }
+
+  .label { font-size: 13px; color: #888888; margin-bottom: 10px; }
+  .value { font-size: 40px; font-weight: 700; color: #a50034; min-height: 50px; }
+
+  .status {
+    min-height: 24px; font-size: 15px; color: #d93025;
+    line-height: 1.5; word-break: keep-all;
+  }
+
+  .row { display: flex; gap: 10px; margin-top: 8px; }
+  button {
+    padding: 13px 24px; border: 1px solid #a50034; border-radius: 10px;
+    background: #ffffff; color: #a50034; font-size: 15px; cursor: pointer;
+  }
+  button:hover { background: #a50034; color: #ffffff; }
+  button:disabled { border-color: #cccccc; color: #bbbbbb; cursor: default; background: #ffffff; }
+
+  .list { margin-top: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .list div { font-size: 15px; color: #555555; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1 id="title">비동기 연습장</h1>
+    <p class="subtitle">Day 4 오전</p>
+
+    <div class="card">
+      <div class="label">현재 기온</div>
+      <div class="value" id="result">-</div>
+      <div class="status" id="status"></div>
+      <div class="row">
+        <button id="load-button">불러오기</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">출력</div>
+      <div class="list" id="list"></div>
+    </div>
+  </div>
+
+<script>
+  // =========================================================
+  //  아래 두 함수는 준비된 것입니다. 손대지 마세요.
+  // =========================================================
+
+  // ms 밀리초만큼 기다리는 약속을 돌려줍니다.
+  // 15장에서 설명한 그 함수입니다.
+  function wait(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  // 1초 뒤에 숫자 42 를 돌려주는 async 함수입니다.
+  // 퀵 실습 4 에서 씁니다.
+  async function getNumber() {
+    await wait(1000);
+    return 42;
+  }
+
+  // 화면 아래 출력 칸에 한 줄 추가합니다.
+  // console.log 대신 화면으로 보고 싶을 때 쓰세요.
+  function print(text) {
+    const item = document.createElement("div");
+    item.textContent = text;
+    document.querySelector("#list").appendChild(item);
+  }
+
+  // 자주 쓰는 요소들을 미리 찾아뒀습니다.
+  const title = document.querySelector("#title");
+  const result = document.querySelector("#result");
+  const status = document.querySelector("#status");
+  const loadButton = document.querySelector("#load-button");
+
+
+  // =========================================================
+  //  퀵 실습 1   슬라이드 7   실행 순서
+  //
+  //  콘솔에 붙여넣고 순서를 확인하세요. 먼저 종이에 적어볼 것.
+  //    console.log("A");
+  //    setTimeout(() => console.log("B"), 2000);
+  //    setTimeout(() => console.log("C"), 0);
+  //    console.log("D");
+  // =========================================================
+
+
+
+
+  // =========================================================
+  //  퀵 실습 2   슬라이드 11   3초 뒤에 제목 바꾸기
+  //
+  //  1. 페이지를 열고 3초 뒤에 제목이 바뀌게
+  //  2. 그동안 status 에 불러오는 중 이라고 표시
+  //  3. 바뀐 뒤에는 그 문구를 지우기
+  //
+  //  setTimeout 을 써도 되고 wait 를 써도 됩니다.
+  // =========================================================
+      setTimeout(() => {
+        console.log("A");
+      setTimeout(() => {
+        console.log("B");
+      setTimeout(() => {
+        console.log("C");
+      }, 1000);
+    }, 1000);
+  }, 1000);
+
+
+
+  // =========================================================
+  //  퀵 실습 3   슬라이드 18   중첩된 코드 펴기
+  //
+  //  1초 뒤 A, 다시 1초 뒤 B, 다시 1초 뒤 C 를
+  //  async 함수 하나로 만들 것. print 로 출력하면 화면에 보입니다.
+  //
+  //  함수를 만들었으면 아래에서 한 번 불러야 실행됩니다.
+  // =========================================================
+
+
+
+
+  // =========================================================
+  //  퀵 실습 4   슬라이드 20   일부러 틀려보기
+  //
+  //  1. await 없이 getNumber 를 불러서 콘솔에 찍어보기
+  //  2. 거기에 더하기 1 을 해보기
+  //  3. await 를 붙여서 다시 해보기
+  //
+  //  2번에서 무엇이 나오는지, 에러가 나는지 아닌지 확인할 것.
+  // =========================================================
+
+
+
+
+  // =========================================================
+  //  퀵 실습 5   슬라이드 28   주소창만으로
+  //
+  //  코드를 쓰지 않습니다. 브라우저 주소창에서 하세요.
+  //  https://api.open-meteo.com/v1/forecast
+  //    ?latitude=37.5665&longitude=126.978&current=temperature_2m
+  // =========================================================
+
+
+
+
+  // =========================================================
+  //  퀵 실습 6   슬라이드 36   받아온 기온을 화면에 그리기
+  //
+  //  1. 콘솔이 아니라 result 에 기온을 표시
+  //  2. 불러오기 버튼을 누르면 다시 불러오게
+  //  3. 습도도 같이 받아서 함께 표시          (심화)
+  //
+  //  주소는 위 퀵 실습 5 의 것을 쓰면 됩니다.
+  // =========================================================
+
+
+
+
+  // =========================================================
+  //  퀵 실습 7   슬라이드 44   일부러 실패시켜 보기
+  //
+  //  1. 위 코드를 try catch 로 감싸기
+  //  2. 주소에서 forecast 를 forecastX 로 바꿔보기
+  //     catch 로 가는지, 아니면 그냥 넘어가는지 확인
+  //  3. response.ok 확인을 넣어 status 에 안내 문구 띄우기
+  // =========================================================
+
+
+
+
+  // =========================================================
+  //  퀵 실습 8   슬라이드 48   로딩과 에러까지
+  //
+  //  1. 불러오는 동안 status 에 불러오는 중 이라고 표시
+  //  2. 다 되면 그 문구를 지우기
+  //  3. 실패하면 문제가 생겼습니다 와 이유를 표시
+  //  4. 주소를 틀리게 해서 3번이 실제로 뜨는지 확인
+  //
+  //  로딩이 너무 빨라 안 보이면 앞에 await wait(1000) 을 넣어보세요.
+  //  버튼을 잠그려면 loadButton.disabled = true 입니다.
+  // =========================================================
+
+
+
+
+</script>
+
+</body>
+</html>

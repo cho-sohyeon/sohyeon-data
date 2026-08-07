@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반응속도 테스트</title>
+<style>
+  body {
+    margin: 0; padding: 40px 20px; background: #f2f4f8;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif; color: #111111;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { margin: 0 0 6px; font-size: 26px; }
+  .subtitle { margin: 0 0 28px; font-size: 15px; color: #888888; }
+
+  .stage {
+    height: 260px; margin-bottom: 24px; border-radius: 16px;
+    background: #dfe3ea; color: #555555;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; cursor: pointer; user-select: none;
+  }
+  .stage.waiting { background: #a50034; color: #ffffff; }
+  .stage.go { background: #2e9e5b; color: #ffffff; }
+  .stage-main { font-size: 30px; font-weight: 700; }
+  .stage-sub { font-size: 15px; opacity: .85; }
+
+  .stats { display: flex; gap: 40px; padding: 22px 28px; margin-bottom: 24px;
+    border-radius: 14px; background: #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+  .stat-label { font-size: 13px; color: #888888; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 700; color: #a50034; }
+
+  .list-title { font-size: 13px; color: #888888; margin-bottom: 10px; }
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .record {
+    display: flex; align-items: center; gap: 16px; padding: 14px 20px;
+    border-radius: 10px; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  }
+  .record-no { width: 40px; font-size: 14px; color: #aaaaaa; }
+  .record-time { font-size: 17px; font-weight: 700; }
+  .record-best { margin-left: auto; font-size: 13px; color: #a50034; }
+  .empty { color: #aaaaaa; font-size: 15px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1>반응속도 테스트</h1>
+    <p class="subtitle">초록색으로 바뀌면 바로 클릭</p>
+
+    <div class="stage" id="stage">
+      <div class="stage-main" id="stage-main">클릭해서 시작</div>
+      <div class="stage-sub" id="stage-sub">준비되면 눌러주세요</div>
+    </div>
+
+    <div class="stats">
+      <div>
+        <div class="stat-label">시도</div>
+        <div class="stat-value" id="count">0회</div>
+      </div>
+      <div>
+        <div class="stat-label">최고 기록</div>
+        <div class="stat-value" id="best">-</div>
+      </div>
+      <div>
+        <div class="stat-label">평균</div>
+        <div class="stat-value" id="average">-</div>
+      </div>
+    </div>
+
+    <div class="list-title">기록</div>
+    <div class="list" id="list"></div>
+  </div>
+
+<script>
+  // =========================================================
+  //  1단계  데이터
+  //  측정한 시간을 밀리초 단위로 모아둡니다.
+  // =========================================================
+  const records = [];
+
+
+  // =========================================================
+  //  2단계  TODO 1  기록 목록 그리기        [ 기본 ]
+  // =========================================================
+  function render() {
+    const list = document.querySelector("#list");
+    const count = document.querySelector("#count");
+
+    // 시도 횟수
+    count.textContent = records.length + "회";
+
+    // 기록이 없을 때
+    if (records.length === 0) {
+      list.innerHTML = `<div class="empty">아직 기록이 없습니다.</div>`;
+      renderStats();
+      return;
+    }
+
+    // 최고 기록(가장 짧은 시간)에 표시를 달기 위해 미리 구해둠
+    const best = Math.min(...records);
+
+    list.innerHTML = records
+      .map((time, index) => `
+        <div class="record">
+          <span class="record-no">${index + 1}</span>
+          <span class="record-time">${time}ms</span>
+          ${time === best ? `<span class="record-best">최고 기록</span>` : ""}
+        </div>
+      `)
+      .reverse()   // 최신 기록이 위로 오게 뒤집기
+      .join("");
+
+    renderStats();   // 목록을 그릴 때 통계도 같이 갱신
+  }
+
+
+  // =========================================================
+  //  3단계  TODO 2  기록 남기기              [ 기본 ]
+  // =========================================================
+  function addRecord(elapsed) {
+    records.push(elapsed);   // 배열에 넣고
+    render();                // 화면 다시 그리기
+  }
+
+
+  // =========================================================
+  //  4단계  TODO 3  최고 기록과 평균         [ 심화 ]
+  // =========================================================
+  function renderStats() {
+    const bestEl = document.querySelector("#best");
+    const averageEl = document.querySelector("#average");
+
+    if (records.length === 0) {
+      bestEl.textContent = "-";
+      averageEl.textContent = "-";
+      return;
+    }
+
+    // 가장 짧은 시간
+    bestEl.textContent = Math.min(...records) + "ms";
+
+    // 평균 = 전체 합 / 개수
+    const sum = records.reduce((total, time) => total + time, 0);
+    averageEl.textContent = Math.round(sum / records.length) + "ms";
+  }
+
+
+  // =========================================================
+  //  아래는 완성되어 있습니다. 손대지 마세요.
+  //  색을 바꾸고 시간을 재는 부분입니다.
+  // =========================================================
+
+  const stage = document.querySelector("#stage");
+  const stageMain = document.querySelector("#stage-main");
+  const stageSub = document.querySelector("#stage-sub");
+
+  let phase = "ready";     // ready, waiting, go
+  let startTime = 0;
+  let timerId = 0;
+
+  stage.addEventListener("click", () => {
+    if (phase === "ready") {
+      startWaiting();
+      return;
+    }
+
+    if (phase === "waiting") {
+      // 초록색이 되기 전에 눌렀으므로 무효 처리
+      clearTimeout(timerId);
+      setPhase("ready", "너무 빨랐습니다", "다시 눌러 시작하세요");
+      return;
+    }
+
+    if (phase === "go") {
+      const elapsed = Date.now() - startTime;
+      setPhase("ready", elapsed + "ms", "다시 눌러 시작하세요");
+      addRecord(elapsed);
+    }
+  });
+
+  function startWaiting() {
+    setPhase("waiting", "기다리세요", "초록색이 되면 클릭");
+
+    // 1초에서 4초 사이 무작위로 기다린 뒤 초록색으로 바꿈
+    const delay = 1000 + Math.floor(Math.random() * 3000);
+    timerId = setTimeout(() => {
+      setPhase("go", "지금 클릭", "");
+      startTime = Date.now();
+    }, delay);
+  }
+
+  function setPhase(next, mainText, subText) {
+    phase = next;
+    stage.classList.remove("waiting", "go");
+    if (next !== "ready") {
+      stage.classList.add(next);
+    }
+    stageMain.textContent = mainText;
+    stageSub.textContent = subText;
+  }
+
+  // 페이지가 열릴 때 한 번 그립니다.
+  render();
+</script>
+
+</body>
+</html>

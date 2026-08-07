@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오늘 뭐 입지</title>
+<style>
+  body {
+    margin: 0; padding: 40px 20px; background: #f2f4f8;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif; color: #111111;
+  }
+  .wrap { max-width: 600px; margin: 0 auto; }
+  h1 { margin: 0 0 6px; font-size: 26px; }
+  .subtitle { margin: 0 0 26px; font-size: 15px; color: #888888; }
+
+  .cities { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+  .cities button {
+    padding: 9px 16px; border: 1px solid #dddddd; border-radius: 999px;
+    background: #ffffff; font-size: 14px; color: #555555; cursor: pointer;
+  }
+  .cities button:hover { border-color: #a50034; color: #a50034; }
+  .cities button.active { background: #a50034; border-color: #a50034; color: #ffffff; }
+  .cities button:disabled { opacity: .5; cursor: default; }
+
+  .main {
+    padding: 40px 34px; margin-bottom: 18px; border-radius: 18px;
+    background: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,.07); text-align: center;
+  }
+  .city-name { font-size: 15px; color: #888888; margin-bottom: 14px; }
+  .temperature { font-size: 60px; font-weight: 700; color: #a50034; line-height: 1.1; min-height: 66px; }
+  .outfit { margin-top: 18px; font-size: 19px; font-weight: 500; line-height: 1.5; word-break: keep-all; min-height: 30px; }
+  .detail { margin-top: 10px; font-size: 14px; color: #888888; }
+
+  .status { min-height: 24px; margin-bottom: 18px; text-align: center; font-size: 15px; color: #d93025; line-height: 1.5; word-break: keep-all; }
+
+  .hourly-title { font-size: 13px; color: #888888; margin-bottom: 10px; }
+  .hourly { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; }
+  .hour {
+    flex-shrink: 0; width: 74px; padding: 14px 0; border-radius: 12px;
+    background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,.05); text-align: center;
+  }
+  .hour-time { font-size: 13px; color: #888888; margin-bottom: 6px; }
+  .hour-temp { font-size: 16px; font-weight: 700; }
+  .empty { color: #aaaaaa; font-size: 14px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1>오늘 뭐 입지</h1>
+    <p class="subtitle">지금 기온에 맞는 옷차림</p>
+
+    <div class="cities" id="cities"></div>
+
+    <div class="main">
+      <div class="city-name" id="city-name">-</div>
+      <div class="temperature" id="temperature">-</div>
+      <div class="outfit" id="outfit"></div>
+      <div class="detail" id="detail"></div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div class="hourly-title">시간대별</div>
+    <div class="hourly" id="hourly"></div>
+  </div>
+
+<script>
+  // =========================================================
+  //  1단계  데이터. 손대지 마세요.
+  // =========================================================
+  const CITIES = [
+    { name: "서울", latitude: 37.5665, longitude: 126.9780 },
+    { name: "부산", latitude: 35.1796, longitude: 129.0756 },
+    { name: "대구", latitude: 35.8714, longitude: 128.6014 },
+    { name: "강릉", latitude: 37.7519, longitude: 128.8761 },
+    { name: "제주", latitude: 33.4996, longitude: 126.5312 }
+  ];
+
+  // 지금 고른 도시입니다. 버튼을 누르면 바뀝니다.
+  let selectedCity = CITIES[0];
+
+  // 도시로 API 주소를 만들어 줍니다. 손대지 마세요.
+  function buildUrl(city) {
+    return "https://api.open-meteo.com/v1/forecast"
+      + "?latitude=" + city.latitude
+      + "&longitude=" + city.longitude
+      + "&current=temperature_2m,relative_humidity_2m"
+      + "&hourly=temperature_2m"
+      + "&forecast_days=1"
+      + "&timezone=Asia%2FSeoul";
+  }
+
+
+  // =========================================================
+  //  TODO 1  기온 받아오기                  [ 기본 ]
+  //
+  //  buildUrl(city) 로 주소를 만들고 fetch 로 받아오세요.
+  //  받은 데이터를 그대로 돌려주면 됩니다.
+  //
+  //  await 가 두 번 필요합니다. 26장 참고.
+  // =========================================================
+  async function getWeather(city) {
+    const response = await fetch(buildUrl(city));
+
+    // fetch 는 404 를 실패로 치지 않으므로 직접 확인해야 함
+    if (!response.ok) {
+      throw new Error("서버 응답 " + response.status);
+    }
+
+    return await response.json();
+  }
+
+
+  // =========================================================
+  //  TODO 2  기온으로 옷차림 정하기           [ 기본 ]
+  //
+  //  기온을 받아서 추천 문구를 돌려주세요.
+  //
+  //    28 이상            민소매, 반팔, 반바지
+  //    23 이상 28 미만    반팔, 얇은 셔츠
+  //    17 이상 23 미만    긴팔, 얇은 가디건
+  //    12 이상 17 미만    자켓, 야상, 스타킹
+  //    5 이상 12 미만     코트, 히트텍, 니트
+  //    5 미만             패딩, 두꺼운 코트, 목도리
+  // =========================================================
+  function getOutfit(temperature) {
+    // 위에서부터 걸러지므로 아래 조건은 더 안 써도 됨
+    if (temperature >= 28) {
+      return "민소매, 반팔, 반바지";
+    }
+    if (temperature >= 23) {
+      return "반팔, 얇은 셔츠";
+    }
+    if (temperature >= 17) {
+      return "긴팔, 얇은 가디건";
+    }
+    if (temperature >= 12) {
+      return "자켓, 야상, 스타킹";
+    }
+    if (temperature >= 5) {
+      return "코트, 히트텍, 니트";
+    }
+
+    return "패딩, 두꺼운 코트, 목도리";
+  }
+
+
+  // =========================================================
+  //  TODO 3  로딩과 실패 안내                [ 기본 ]
+  //
+  //  아래 순서로 채우세요.
+  //    1. 시작할 때 status 에 불러오는 중 표시, 버튼 잠그기
+  //    2. getWeather 로 받아서 render 에 넘기기
+  //    3. 실패하면 status 에 안내 문구 표시
+  //    4. 어느 쪽이든 status 를 지우고 버튼 풀기
+  //
+  //  36장 완성형을 참고하세요.
+  // =========================================================
+  async function loadWeather() {
+    status.textContent = "불러오는 중입니다";
+    setButtonsDisabled(true);
+
+    try {
+      const data = await getWeather(selectedCity);
+      render(data);
+      status.textContent = "";
+    } catch (error) {
+      // 개발자용 원본은 콘솔에, 사용자용 문구는 화면에
+      console.log(error);
+      status.textContent = "날씨를 불러오지 못했습니다. 다시 시도해 주세요";
+    } finally {
+      // 성공하든 실패하든 버튼은 다시 풀어야 함
+      setButtonsDisabled(false);
+    }
+  }
+
+
+  // =========================================================
+  //  아래는 완성되어 있습니다. 손대지 마세요.
+  // =========================================================
+
+  const status = document.querySelector("#status");
+
+  // 받은 데이터로 화면을 그립니다.
+  function render(data) {
+    document.querySelector("#city-name").textContent = selectedCity.name;
+    document.querySelector("#temperature").textContent =
+      data.current.temperature_2m + "도";
+    document.querySelector("#outfit").textContent =
+      getOutfit(data.current.temperature_2m);
+    document.querySelector("#detail").textContent =
+      "습도 " + data.current.relative_humidity_2m + "퍼센트";
+
+    renderHourly(data.hourly);
+  }
+
+  // 시간대별 예보를 그립니다.
+  function renderHourly(hourly) {
+    const hourlyElement = document.querySelector("#hourly");
+
+    if (!hourly) {
+      hourlyElement.innerHTML = '<span class="empty">시간대별 정보가 없습니다</span>';
+      return;
+    }
+
+    // time 과 temperature_2m 이 같은 번호로 대응됩니다.
+    hourlyElement.innerHTML = hourly.time
+      .map((time, index) => `
+        <div class="hour">
+          <div class="hour-time">${time.slice(11, 16)}</div>
+          <div class="hour-temp">${hourly.temperature_2m[index]}도</div>
+        </div>
+      `)
+      .join("");
+  }
+
+  // 도시 버튼을 만들고 연결합니다.
+  function renderCities() {
+    const citiesElement = document.querySelector("#cities");
+
+    citiesElement.innerHTML = CITIES
+      .map(city => `
+        <button data-name="${city.name}"
+          class="${city.name === selectedCity.name ? "active" : ""}">${city.name}</button>
+      `)
+      .join("");
+  }
+
+  document.querySelector("#cities").addEventListener("click", (event) => {
+    if (event.target.tagName !== "BUTTON") {
+      return;
+    }
+
+    selectedCity = CITIES.find(city => city.name === event.target.dataset.name);
+    renderCities();
+    loadWeather();
+  });
+
+  // 불러오는 동안 버튼을 잠급니다.
+  function setButtonsDisabled(disabled) {
+    for (const button of document.querySelectorAll("#cities button")) {
+      button.disabled = disabled;
+    }
+  }
+
+  // 페이지가 열릴 때 한 번 불러옵니다.
+  renderCities();
+  loadWeather();
+</script>
+
+</body>
+</html>

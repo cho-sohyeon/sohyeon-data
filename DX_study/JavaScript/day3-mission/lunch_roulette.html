@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>점심 메뉴 룰렛</title>
+<style>
+  body {
+    margin: 0; padding: 40px 20px; background: #f2f4f8;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif; color: #111111;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { margin: 0 0 6px; font-size: 26px; }
+  .subtitle { margin: 0 0 28px; font-size: 15px; color: #888888; }
+
+  .result-box {
+    padding: 44px 30px; margin-bottom: 24px; border-radius: 16px;
+    background: #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,.06); text-align: center;
+  }
+  .result-label { font-size: 13px; color: #888888; margin-bottom: 12px; }
+  .result { font-size: 44px; font-weight: 700; color: #a50034; min-height: 56px; }
+
+  .pick-button {
+    width: 100%; padding: 18px; margin-bottom: 28px; border: none; border-radius: 12px;
+    background: #a50034; color: #ffffff; font-size: 18px; font-weight: 700; cursor: pointer;
+  }
+  .pick-button:hover { background: #7d0027; }
+
+  .add-row { display: flex; gap: 8px; margin-bottom: 18px; }
+  input {
+    flex: 1; padding: 13px 16px; border: 1px solid #dddddd;
+    border-radius: 10px; font-size: 15px;
+  }
+  .add-button {
+    padding: 13px 22px; border: 1px solid #a50034; border-radius: 10px;
+    background: #ffffff; color: #a50034; font-size: 15px; cursor: pointer;
+  }
+
+  .count { font-size: 13px; color: #888888; margin-bottom: 10px; }
+  .list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .menu-item {
+    display: flex; align-items: center; gap: 8px; padding: 9px 14px;
+    border-radius: 999px; background: #ffffff; font-size: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  }
+  .menu-item button {
+    border: none; background: none; color: #bbbbbb;
+    font-size: 16px; cursor: pointer; padding: 0;
+  }
+  .menu-item button:hover { color: #a50034; }
+  .empty { color: #aaaaaa; font-size: 15px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1>점심 메뉴 룰렛</h1>
+    <p class="subtitle">오늘 뭐 먹지</p>
+
+    <div class="result-box">
+      <div class="result-label">오늘의 메뉴</div>
+      <div class="result" id="result">?</div>
+    </div>
+
+    <button class="pick-button" id="pick-button">뽑기</button>
+
+    <div class="add-row">
+      <input type="text" id="menu-input" placeholder="메뉴 추가">
+      <button class="add-button" id="add-button">추가</button>
+    </div>
+
+    <div class="count" id="count"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+<script>
+  // =========================================================
+  //  1단계  데이터
+  // =========================================================
+  const menus = ["도시락", "편의점", "육바연", "풍년", "돈까스", "탐스", "밥장인", "돈수백", "니뽕내뽕", "세븐소스", "마라탕", "김가네"];
+
+  // =========================================================
+  //  2단계  TODO 1  화면에 그리기          [ 기본 ]
+  // =========================================================
+  function render() {
+    const list = document.querySelector("#list");
+    const count = document.querySelector("#count");
+
+    // 메뉴를 다 지웠을 때 대비
+    if (menus.length === 0) {
+      list.innerHTML = `<div class="empty">메뉴가 없습니다. 아래에서 추가해 보세요.</div>`;
+      count.textContent = "메뉴 0개";
+      return;
+    }
+
+    // 배열 -> HTML 문자열
+    // data-index 를 꼭 넣어야 아래 삭제 코드가 몇 번째인지 알 수 있습니다
+    list.innerHTML = menus
+      .map((menu, index) => `
+        <div class="menu-item">
+          ${menu}<button data-index="${index}">x</button>
+        </div>
+      `)
+      .join("");
+
+    count.textContent = `메뉴 ${menus.length}개`;
+  }
+
+
+  // =========================================================
+  //  3단계  TODO 2  뽑기 버튼               [ 기본 ]
+  // =========================================================
+  const pickButton = document.querySelector("#pick-button");
+
+  pickButton.addEventListener("click", () => {
+    const result = document.querySelector("#result");
+
+    if (menus.length === 0) {
+      result.textContent = "?";
+      return;
+    }
+
+    const index = Math.floor(Math.random() * menus.length);
+    result.textContent = menus[index];
+  });
+
+
+  // =========================================================
+  //  4단계  TODO 3  메뉴 추가와 삭제         [ 심화 ]
+  // =========================================================
+  const addButton = document.querySelector("#add-button");
+  const menuInput = document.querySelector("#menu-input");
+
+  addButton.addEventListener("click", () => {
+    const value = menuInput.value.trim();   // 앞뒤 공백 제거
+
+    if (value === "") {                     // 빈 칸이면 아무 일도 없음
+      return;
+    }
+
+    menus.push(value);      // 배열에 넣고
+    menuInput.value = "";   // 입력창 비우고
+    menuInput.focus();      // 커서 다시 놓기
+    render();               // 다시 그리기
+  });
+
+  function removeMenu(index) {
+    menus.splice(index, 1);   // index 자리에서 1개 삭제
+    render();                 // 다시 그리기
+  }
+
+
+  // =========================================================
+  //  아래는 완성되어 있습니다. 손대지 마세요.
+  // =========================================================
+  document.querySelector("#list").addEventListener("click", (event) => {
+    if (event.target.tagName !== "BUTTON") {
+      return;
+    }
+    removeMenu(Number(event.target.dataset.index));
+  });
+
+  menuInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      addButton.click();
+    }
+  });
+
+  // 페이지가 열릴 때 한 번 그립니다.
+  render();
+</script>
+
+</body>
+</html>

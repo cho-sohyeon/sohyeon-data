@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개발자 성향 테스트</title>
+<style>
+  body {
+    margin: 0; padding: 40px 20px; background: #f2f4f8;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif; color: #111111;
+  }
+  .wrap { max-width: 620px; margin: 0 auto; }
+  h1 { margin: 0 0 6px; font-size: 26px; }
+  .subtitle { margin: 0 0 28px; font-size: 15px; color: #888888; }
+
+  .card {
+    padding: 40px 36px; border-radius: 18px; background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0,0,0,.07);
+  }
+
+  .progress { font-size: 13px; color: #888888; margin-bottom: 14px; }
+  .bar { height: 6px; border-radius: 999px; background: #eeeeee; margin-bottom: 28px; }
+  .bar-fill { height: 100%; border-radius: 999px; background: #a50034; width: 0%; }
+
+  .question { font-size: 22px; font-weight: 700; line-height: 1.45; margin-bottom: 26px; word-break: keep-all; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .options button {
+    width: 100%; padding: 18px 22px; text-align: left;
+    border: 1px solid #dddddd; border-radius: 12px; background: #ffffff;
+    font-size: 16px; color: #333333; cursor: pointer; line-height: 1.45;
+  }
+  .options button:hover { border-color: #a50034; color: #a50034; }
+
+  .result-type { font-size: 15px; color: #a50034; font-weight: 700; margin-bottom: 10px; }
+  .result-title { font-size: 30px; font-weight: 700; margin-bottom: 16px; }
+  .result-text { font-size: 16px; line-height: 1.65; color: #555555; margin-bottom: 28px; word-break: keep-all; }
+  .restart {
+    padding: 14px 26px; border: none; border-radius: 10px;
+    background: #a50034; color: #ffffff; font-size: 15px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1>개발자 성향 테스트</h1>
+    <p class="subtitle">네 문항으로 알아보는 나의 유형</p>
+
+    <div class="card" id="card"></div>
+  </div>
+
+<script>
+  // =========================================================
+  //  1단계  데이터
+  // =========================================================
+  const questions = [
+    {
+      text: "새 도구를 배울 때 나는",
+      options: [
+        { label: "일단 만들어보면서 익힌다", type: "만들기" },
+        { label: "문서를 먼저 읽고 시작한다", type: "따지기" }
+      ]
+    },
+    {
+      text: "코드가 돌아가긴 하는데 왜 되는지 모를 때",
+      options: [
+        { label: "일단 넘어가고 다음을 만든다", type: "만들기" },
+        { label: "이유를 찾을 때까지 붙잡는다", type: "따지기" }
+      ]
+    },
+    {
+      text: "화면을 만들 때 먼저 신경 쓰는 것은",
+      options: [
+        { label: "보기 좋은 모양과 색", type: "꾸미기" },
+        { label: "빠짐없이 도는 동작", type: "따지기" }
+      ]
+    },
+    {
+      text: "다 만든 뒤에 더 하고 싶은 일은",
+      options: [
+        { label: "여백과 색을 다듬는다", type: "꾸미기" },
+        { label: "기능을 하나 더 붙인다", type: "만들기" }
+      ]
+    }
+  ];
+
+  const results = {
+    만들기: { title: "일단 만들고 보는 사람", text: "손이 먼저 움직이는 유형입니다. 완성까지 가는 힘이 있습니다. 대신 왜 되는지 한 번씩 돌아보면 훨씬 멀리 갑니다." },
+    따지기: { title: "이유를 알아야 하는 사람", text: "원인을 찾아내는 힘이 있습니다. 디버깅에 강한 유형입니다. 대신 완벽하지 않아도 일단 굴려보는 연습이 도움이 됩니다." },
+    꾸미기: { title: "보이는 것을 챙기는 사람", text: "사용자가 무엇을 볼지 먼저 생각하는 유형입니다. 프론트엔드에 잘 맞습니다. 동작까지 함께 챙기면 더 좋습니다." }
+  };
+
+  let currentIndex = 0;
+  const scores = { 만들기: 0, 따지기: 0, 꾸미기: 0 };
+
+
+  // =========================================================
+  //  2단계  TODO 1  질문 화면 그리기         [ 기본 ]
+  // =========================================================
+  function renderQuestion() {
+    const card = document.querySelector("#card");
+    const question = questions[currentIndex];          // 지금 문항 하나 꺼내기
+
+    // 진행률 계산 (1번 문항이면 25%)
+    const percent = ((currentIndex + 1) / questions.length) * 100;
+
+    // 선택지 버튼들 만들기
+    // data-type 을 꼭 넣어야 아래 클릭 코드가 어떤 유형인지 알 수 있습니다
+    const optionButtons = question.options
+      .map((option) => `<button data-type="${option.type}">${option.label}</button>`)
+      .join("");
+
+    card.innerHTML = `
+      <div class="progress">${currentIndex + 1} / ${questions.length}</div>
+      <div class="bar"><div class="bar-fill" style="width:${percent}%"></div></div>
+      <div class="question">${question.text}</div>
+      <div class="options">${optionButtons}</div>
+    `;
+  }
+
+
+  // =========================================================
+  //  3단계  TODO 2  선택지를 골랐을 때        [ 기본 ]
+  // =========================================================
+  function selectOption(type) {
+    scores[type] = scores[type] + 1;   // 고른 유형에 1점
+    currentIndex = currentIndex + 1;   // 다음 문항으로
+
+    if (currentIndex < questions.length) {
+      renderQuestion();   // 아직 남았으면 다음 질문
+    } else {
+      renderResult();     // 다 풀었으면 결과 화면
+    }
+  }
+
+
+  // =========================================================
+  //  4단계  TODO 3  결과 화면                [ 심화 ]
+  // =========================================================
+  function renderResult() {
+    const card = document.querySelector("#card");
+
+    // 점수가 가장 높은 유형 찾기
+    // 유형 이름을 하나씩 비교해서 더 높은 쪽만 남깁니다
+    const types = Object.keys(scores);              // ["만들기", "따지기", "꾸미기"]
+    let topType = types[0];
+
+    for (const type of types) {
+      if (scores[type] > scores[topType]) {
+        topType = type;
+      }
+    }
+
+    const result = results[topType];
+
+    card.innerHTML = `
+      <div class="result-type">당신의 유형</div>
+      <div class="result-title">${result.title}</div>
+      <div class="result-text">${result.text}</div>
+      <button class="restart" id="restart">다시 하기</button>
+    `;
+  }
+
+
+  // =========================================================
+  //  아래는 완성되어 있습니다. 손대지 마세요.
+  // =========================================================
+
+  document.querySelector("#card").addEventListener("click", (event) => {
+    if (event.target.tagName !== "BUTTON") {
+      return;
+    }
+
+    if (event.target.id === "restart") {
+      restart();
+      return;
+    }
+
+    selectOption(event.target.dataset.type);
+  });
+
+  function restart() {
+    currentIndex = 0;
+    for (const type of Object.keys(scores)) {
+      scores[type] = 0;
+    }
+    renderQuestion();
+  }
+
+  // 페이지가 열릴 때 첫 질문을 그립니다.
+  renderQuestion();
+</script>
+
+</body>
+</html>
