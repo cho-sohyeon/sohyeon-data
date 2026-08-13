@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.membercrud.mapper.PostMapper">
+
+    <insert id="insertPost" parameterType="com.example.membercrud.domain.Post">
+        INSERT INTO POSTS (
+            TITLE
+            , CONTENT
+            , WRITER_ID 
+            , PASSWORD
+            , CREATED_AT
+        )
+        VALUES (
+            #{title}
+            , #{content}
+            , #{writerId}
+            , #{password}
+            , SYSTIMESTAMP
+        )
+    </insert>
+
+    <!--
+        resultTYpe => 반환하려는 자료형을 설정한다. (여기서 Post 클래스) 
+        SELECT  결과값을 Post 에 담아주는데, 
+        자동으로 mybatis가 USER_ID -> userId 같은 식을 매칭해준다. 
+        그래서 Post -->
+
+
+    <select id="selectPostById"
+        parameterType="java.lang.Long"
+        resultType="com.example.membercrud.domain.Post">
+
+        SELECT
+            POST_ID,
+            TITLE,
+            CONTENT,
+            WRITER_ID,
+            CREATED_AT
+        FROM POSTS
+        WHERE POST_ID = #{id}
+
+    </select>
+
+    <!-- 게시글 전체 조회 SQL -->
+    <select id = "selectPostList"
+        resultType="com.example.membercrud.domain.Post">
+        SELECT
+            POST_ID,
+            TITLE,
+            CONTENT,
+            WRITER_ID,
+            CREATED_AT
+        FROM POSTS
+        ORDER BY CREATED_AT DESC
+
+    </select> 
+
+    <update id = "updatePost" 
+        parameterType="com.example.membercrud.domain.Post">
+        UPDATE POSTS
+            SET
+                TITLE = #{title},
+                CONTENT = #{content},
+                WRITER_ID = #{writerId}
+        WHERE POST_ID = #{postId}
+            AND PASSWORD = #{password}
+
+    </update>
+
+
+    <delete id="deletePost">
+        DELETE FROM POSTS
+        WHERE POST_ID = #{postId}
+            AND PASSWORD = #{password}
+
+    </delete>
+
+</mapper>

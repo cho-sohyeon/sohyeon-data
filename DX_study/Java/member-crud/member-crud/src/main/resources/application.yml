@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: member-crud
+  datasource:
+    # Oracle 21c XE 기본값. 환경 변수로 실제 접속 정보를 덮어쓸 수 있습니다.
+    url: jdbc:oracle:thin:@//localhost:1521/XE
+    username: C##LG_DB
+    password: 12345
+    driver-class-name: oracle.jdbc.OracleDriver
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml #SQL이 담긴 파일이 이 경로에 있다 ~ resource 폴더 안에 mapper 폴더 ㅇ나에 *.xml (모든 xml) 
+  configuration:
+    map-underscore-to-camel-case: true #DB 컬럼명 스네이크 방식(USER_ID) -- 자바 카멜방식 (userId)
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+server:
+  address: 0.0.0.0
+  port: 8095
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
